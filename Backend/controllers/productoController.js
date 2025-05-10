@@ -14,12 +14,24 @@ class ProductoController {
   async obtenerProductos(req, res) {
     try {
       const productos = await productoModel.obtenerTodos();
-      res.json(productos);
+  
+      const productosFormateados = productos.map(p => ({
+        id: p._id,
+        nombre: p.nombre,
+        marca: p.marca,
+        descripcion: p.descripcion,
+        precio: p.precio,
+        stock:p.stock,
+        imagen: p.imagenUrl,
+        categoria: p.categoria,
+      }));
+  
+      res.json(productosFormateados);
     } catch (error) {
       res.status(500).json({ mensaje: 'Error al obtener productos' });
     }
   }
-
+  
   async obtenerProductoPorId(req, res) {
     try {
       const producto = await productoModel.obtenerPorId(req.params.id);

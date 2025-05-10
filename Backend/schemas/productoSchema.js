@@ -6,7 +6,14 @@ const productoSchema = new mongoose.Schema({
     required: [true, 'El nombre es obligatorio'], 
     trim: true,
     minlength: [2, 'El nombre debe tener al menos 2 caracteres'],
-    maxlength: [30, 'El nombre no debe exceder 100 caracteres']
+    maxlength: [30, 'El nombre no debe exceder 30 caracteres']
+  },
+  marca: { 
+    type: String, 
+    required: [true, 'La marca es obligatorio'], 
+    trim: true,
+    minlength: [2, 'La marca debe tener al menos 2 caracteres'],
+    maxlength: [30, 'La marca no debe exceder 30 caracteres']
   },
   descripcion: { 
     type: String, 
