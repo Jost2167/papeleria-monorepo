@@ -1,0 +1,43 @@
+/* Slick Carousel styles */
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+/* Custom styles */
+@layer components {
+    .card-hover:hover {
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transform: translateY(-5px);
+    }
+  
+    .button-primary {
+      background-color: #1e3a8a; /* Deep Blue */
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+  
+    .button-primary:hover {
+      background-color: #1e40af;
+    }
+  
+    .pagination-button {
+      padding: 0.75rem 1.25rem;
+      background-color: #f3f4f6;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+  
+    .pagination-button:hover {
+      background-color: #d1d5db;
+    }
+  }
+  
