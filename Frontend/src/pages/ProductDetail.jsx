@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { FaCarSide, FaQuestion } from "react-icons/fa";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { addToCart } from "../redux/cartSlice";
-import Swal from 'sweetalert2'; // Importar SweetAlert2
+import Swal from 'sweetalert2';
+import axios from "axios";
 
 const ProductDetail = () => {
     const { id } = useParams();
-    const products = useSelector(state => state.product.products);
-    const [product, setProduct] = useState();
-
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
     const dispatch = useDispatch();
 
     const handleAddToCart = (e, product) => {
@@ -17,7 +17,6 @@ const ProductDetail = () => {
         e.preventDefault();
         dispatch(addToCart(product));
 
-        // Mostrar alerta bonita usando SweetAlert2
         Swal.fire({
             icon: 'success',
             title: '¡Producto agregado!',
@@ -34,15 +33,39 @@ const ProductDetail = () => {
     };
 
     useEffect(() => {
-        const newProduct = products.find(
-            (product) => product.id === parseInt(id)
-        );
-        setProduct(newProduct);
-    }, [id, products]);
+        const fetchProduct = async () => {
+            try {
+                const res = await axios.get(`http://localhost:5100/productos/${id}`);
+                const rawProduct = res.data;
 
-    if (!product) return <div>Cargando ...</div>;
+                const formattedProduct = {
+                    id: rawProduct.id,
+                    name: rawProduct.nombre,
+                    price: rawProduct.precio,
+                    image: rawProduct.imagenUrl,
+                    description: rawProduct.descripcion,
+                };
 
-    return(
+                setProduct(formattedProduct);
+            } catch (error) {
+                console.error("Error al cargar producto:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo cargar el producto.',
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProduct();
+    }, [id]);
+
+    if (loading) return <div>Cargando...</div>;
+    if (!product) return <div>Producto no encontrado</div>;
+
+    return (
         <div className="h-[90vh] container mx-auto py-8 px-4 md:px-16 lg:px-24">
             <div className="flex flex-col md:flex-row gap-x-16">
                 <div className="md:w-1/2 py-4 shadow-md md:px-8 h-96 flex justify-center">

@@ -11,12 +11,21 @@ const ProductCard = ({ product }) => {
   const handleAddToCart = (e, product) => {
     e.stopPropagation();
     e.preventDefault();
-    dispatch(addToCart(product));
 
+    // Convertir las propiedades al formato que el carrito espera
+    const formattedProduct = {
+      id: product.id,
+      name: product.nombre,
+      price: product.precio,
+      image: product.imagen,
+    };
+    
+    dispatch(addToCart(formattedProduct)); // ✅ Ahora sí funciona
+    
     // Mostrar alerta bonita usando SweetAlert2
     Swal.fire({
       icon: 'success',
-      title: '¡Producto agregado!',
+      title: '¡Producto agregados!',
       text: `Has agregado ${product.nombre} al carrito.`,
       confirmButtonText: 'Aceptar',
       confirmButtonColor: '#3085d6',
