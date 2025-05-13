@@ -13,12 +13,12 @@ const cartSchema = new mongoose.Schema({
   ],
   totalQuantity: Number,
   totalPrice: Number,
-  address: String,
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
+
 
 const Cart = mongoose.model('Cart', cartSchema);
 
