@@ -5,20 +5,25 @@ import cartRoutes from './routes/cartRoutes.js';
 import bodyParser from 'body-parser';
 import dbClient from './config/dbClient.js';
 import cors from 'cors';
+import cookieParser from "cookie-parser";
+import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
 
-app.use(cors());
-
+// Configuración CORS para permitir credenciales (cookies)
 app.use(cors({
-    origin: 'http://localhost:5173'
+    origin: 'http://localhost:5173', // Asegúrate de que este es el origen correcto de tu frontend
+    credentials: true,  // Esto permite que se incluyan cookies y credenciales en la solicitud
 }));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(cookieParser());
+
 app.use('/productos', routesProductos);
 app.use('/api/cart', cartRoutes);
+app.use("/api", authRoutes);
 
 try {
     const PORT = process.env.PORT || 3000;
@@ -31,4 +36,3 @@ process.on('SIGINT', async () => {
     await dbClient.cerrarBD();
     process.exit(0); 
 });
-

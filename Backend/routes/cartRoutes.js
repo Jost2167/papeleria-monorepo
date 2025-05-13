@@ -7,7 +7,7 @@ const router = express.Router();
 // Crear carrito nuevo
 router.post('/save', async (req, res) => {
   try {
-    const cartId = uuidv4();
+    const cartId = req.body.cartId || uuidv4();
     const cartData = { ...req.body, cartId };
     const newCart = new Cart(cartData);
     await newCart.save();
