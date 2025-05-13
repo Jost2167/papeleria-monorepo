@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const cartSchema = new mongoose.Schema({
+  cartId: String, // nuevo campo para identificar el carrito
   products: [
     {
       id: String,
@@ -18,7 +19,6 @@ const cartSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
-
 
 const Cart = mongoose.model('Cart', cartSchema);
 

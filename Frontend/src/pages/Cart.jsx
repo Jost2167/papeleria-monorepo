@@ -11,16 +11,28 @@ const Cart = () => {
 
     const handleSaveCart = async () => {
         try {
-            const response = await fetch("http://localhost:5100/api/cart/save", {
-                method: "POST",
+            const cartId = localStorage.getItem("cartId");
+            const method = cartId ? "PUT" : "POST";
+            const endpoint = cartId
+                ? `http://localhost:5100/api/cart/save/${cartId}`
+                : "http://localhost:5100/api/cart/save";
+
+            const response = await fetch(endpoint, {
+                method,
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(cart),
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
                 throw new Error("Error al guardar el carrito");
+            }
+
+            if (!cartId && data.cartId) {
+                localStorage.setItem("cartId", data.cartId);
             }
 
             navigate("/checkout");
@@ -37,7 +49,6 @@ const Cart = () => {
                     <h3 className="text-2xl font-semibold mb-4">Carrito de compras</h3>
                     <div className="flex flex-col md:flex-row justify-between space-x-0 md:space-x-10 mt-8">
                         <div className="md:w-2/3">
-                            {/* Encabezado */}
                             <div className="flex justify-between border-b items-center mb-4 text-xs font-bold">
                                 <p>PRODUCTOS</p>
                                 <div className="flex space-x-8">
@@ -47,19 +58,10 @@ const Cart = () => {
                                     <p>BORRAR</p>
                                 </div>
                             </div>
-
-                            {/* Lista de productos */}
                             {cart.products.map((product) => (
-                                <div
-                                    key={product.id}
-                                    className="flex items-center justify-between p-3 border-b"
-                                >
+                                <div key={product.id} className="flex items-center justify-between p-3 border-b">
                                     <div className="flex items-center space-x-4">
-                                        <img
-                                            src={product.image}
-                                            alt={product.name}
-                                            className="w-16 h-16 object-contain rounded"
-                                        />
+                                        <img src={product.image} alt={product.name} className="w-16 h-16 object-contain rounded" />
                                         <div className="flex-1 ml-4">
                                             <h3 className="text-lg font-semibold">{product.name}</h3>
                                         </div>
@@ -67,33 +69,18 @@ const Cart = () => {
                                     <div className="flex space-x-12 items-center">
                                         <p>${product.price}</p>
                                         <div className="flex items-center border">
-                                            <button
-                                                className="text-xl font-bold px-2 border-r"
-                                                onClick={() => dispatch(decreaseQuantity(product.id))}
-                                            >
-                                                -
-                                            </button>
+                                            <button className="text-xl font-bold px-2 border-r" onClick={() => dispatch(decreaseQuantity(product.id))}>-</button>
                                             <p className="text-xl px-4">{product.quantity}</p>
-                                            <button
-                                                className="text-xl px-2 border-l"
-                                                onClick={() => dispatch(increaseQuantity(product.id))}
-                                            >
-                                                +
-                                            </button>
+                                            <button className="text-xl px-2 border-l" onClick={() => dispatch(increaseQuantity(product.id))}>+</button>
                                         </div>
                                         <p>${(product.quantity * product.price).toFixed(2)}</p>
-                                        <button
-                                            className="text-red-500 hover:text-red-700"
-                                            onClick={() => dispatch(removeFromCart(product.id))}
-                                        >
+                                        <button className="text-red-500 hover:text-red-700" onClick={() => dispatch(removeFromCart(product.id))}>
                                             <FaTrashAlt />
                                         </button>
                                     </div>
                                 </div>
                             ))}
                         </div>
-
-                        {/* Resumen */}
                         <div className="md:w-1/3 bg-white p-6 rounded-lg shadow-md border mt-6 md:mt-0">
                             <h3 className="text-sm font-semibold mb-5">TOTAL CARRITO</h3>
                             <div className="flex justify-between mb-5 border-b pb-1">
@@ -104,10 +91,7 @@ const Cart = () => {
                                 <span>Precio total: </span>
                                 <span>${cart.totalPrice.toFixed(2)}</span>
                             </div>
-                            <button
-                                className="w-full bg-red-600 text-white py-2 hover:bg-red-800"
-                                onClick={handleSaveCart}
-                            >
+                            <button className="w-full bg-red-600 text-white py-2 hover:bg-red-800" onClick={handleSaveCart}>
                                 Continuar al pago
                             </button>
                         </div>
