@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
     const cart = useSelector(state => state.cart);
+    console.log("Estado del carrito:", cart);
     const [address, setAddress] = useState('main street, 0012');
     const [isModelOpen, setIsModelOpen] = useState(false)
     const dispatch = useDispatch()
@@ -100,10 +101,33 @@ const Cart = () => {
                             </div>
                             <button
                                 className="w-full bg-red-600 text-white py-2 hover:bg-red-800"
-                                onClick={() => navigate('/checkout')}
-                            >
+                                onClick={async () => {
+                                    try {
+                                    await fetch("http://localhost:5100/api/cart/save", {
+                                        method: "POST",
+                                        headers: {
+                                        "Content-Type": "application/json",
+                                        },
+                                        body: JSON.stringify({
+                                        ...cart,
+                                        address,
+                                        }),
+                                    });
+                                    navigate("/checkout");
+                                    } catch (err) {
+                                    console.error("Error al guardar el carrito:", err);
+                                    }
+                                }}
+                                >
                                 Continuar al pago
                             </button>
+
+
+
+
+
+
+
                         </div>
                     </div>
                     <Modal

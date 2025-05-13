@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import routesProductos from './routes/productos.js';
+import cartRoutes from './routes/cartRoutes.js';
 import bodyParser from 'body-parser';
 import dbClient from './config/dbClient.js';
 import cors from 'cors';
@@ -17,6 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/productos', routesProductos);
+app.use('/api/cart', cartRoutes);
 
 try {
     const PORT = process.env.PORT || 3000;
