@@ -7,6 +7,7 @@ import dbClient from './config/dbClient.js';
 import cors from 'cors';
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
+import paymentSettingsRoutes from "./routes/paymentSettings.js";
 
 const app = express();
 
@@ -24,6 +25,8 @@ app.use(cookieParser());
 app.use('/productos', routesProductos);
 app.use('/api/cart', cartRoutes);
 app.use("/api", authRoutes);
+app.use("/api/payment", paymentSettingsRoutes);
+
 
 try {
     const PORT = process.env.PORT || 3000;

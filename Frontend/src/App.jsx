@@ -14,6 +14,7 @@ import AboutUs from "./pages/AboutUs"
 import LibreriaAPI from "./pages/LibreriaAPI"
 import Admin from "./pages/Admin";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import PaymentMethods from "./pages/PaymentMethods"
 
 
 function App() {
@@ -34,13 +35,22 @@ function App() {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/libreriaapi" element={<LibreriaAPI />} />
         <Route
-          path="/admin"
+          path="/admin" element={
+          <ProtectedAdminRoute>
+              <Admin />
+          </ProtectedAdminRoute>
+          }
+        />
+
+      <Route
+          path="/admin/payment-methods"
           element={
             <ProtectedAdminRoute>
-              <Admin />
+              <PaymentMethods />
             </ProtectedAdminRoute>
           }
         />
+
       </Routes>
       <Footer />
     </BrowserRouter>
