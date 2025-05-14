@@ -32,12 +32,14 @@ const Login = ({ openSignUp, setIsModelOpen }) => {
                 dispatch(setUser({
                     name: result.username, // 👈 usa 'username' en lugar de 'name'
                     email: result.email,
+                    role: result.role
                 }));
 
                 // ✅ Guardar el usuario en localStorage
                 localStorage.setItem('user', JSON.stringify({
                     name: result.username,  // Cambié `name` por `username`
                     email: result.email,
+                    role: result.role
                 }));
 
                 // ✅ Cerrar el modal

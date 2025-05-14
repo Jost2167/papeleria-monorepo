@@ -12,6 +12,9 @@ import ProductDetail from "./pages/ProductDetail"
 import Contact from "./pages/Contact"
 import AboutUs from "./pages/AboutUs"
 import LibreriaAPI from "./pages/LibreriaAPI"
+import Admin from "./pages/Admin";
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+
 
 function App() {
   const [order, setOrder] = useState(null)
@@ -30,6 +33,14 @@ function App() {
         <Route path="/filter-data" element={<FilterData />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/libreriaapi" element={<LibreriaAPI />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedAdminRoute>
+              <Admin />
+            </ProtectedAdminRoute>
+          }
+        />
       </Routes>
       <Footer />
     </BrowserRouter>

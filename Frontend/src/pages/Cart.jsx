@@ -3,13 +3,41 @@ import EmptyCart from "../assets/Images/emptycart.png";
 import { FaTrashAlt } from "react-icons/fa";
 import { decreaseQuantity, increaseQuantity, removeFromCart } from "../redux/cartSlice";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+// Modal de alerta
+const AlertModal = ({ message, onClose }) => {
+    return (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                <h3 className="text-lg text-center">{message}</h3>
+                <div className="mt-4 text-center">
+                    <button
+                        className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-800"
+                        onClick={onClose}
+                    >
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const Cart = () => {
     const cart = useSelector(state => state.cart);
+    const user = useSelector(state => state.user);
+    const isLoggedIn = user?.isLoggedIn;  // Verificamos si el usuario está logueado
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [showAlert, setShowAlert] = useState(false);  // Estado para mostrar el modal de alerta
 
     const handleSaveCart = async () => {
+        if (!isLoggedIn) {
+            setShowAlert(true);  // Muestra el modal si el usuario no está logueado
+            return;
+        }
+
         try {
             const cartId = localStorage.getItem("cartId");
             const method = cartId ? "PUT" : "POST";
@@ -93,7 +121,7 @@ const Cart = () => {
                                 <span>${cart.totalPrice.toFixed(2)}</span>
                             </div>
                             <button className="w-full bg-red-600 text-white py-2 hover:bg-red-800" onClick={handleSaveCart}>
-                                Continuar al pago
+                                Guardar Carrito
                             </button>
                         </div>
                     </div>
@@ -102,6 +130,14 @@ const Cart = () => {
                 <div className="flex justify-center">
                     <img src={EmptyCart} alt="Empty Cart" className="h-96" />
                 </div>
+            )}
+
+            {/* Mostrar el modal si el usuario no está logueado */}
+            {showAlert && (
+                <AlertModal 
+                    message="Inicia sesión para guardar el carrito" 
+                    onClose={() => setShowAlert(false)} 
+                />
             )}
         </div>
     );

@@ -92,12 +92,19 @@ const Navbar = () => {
             </div>
 
             <div className="flex items-center justify-center space-x-10 py-4 text-sm font-bold">
-                <Link to="/" className="hover:underline">Inicio</Link>
-                <Link to="/shop" className="hover:underline">Tienda</Link>
-                <Link to="/Contact" className="hover:underline">Contacto</Link>
-                <Link to="/aboutus" className="hover:underline">Nosotros</Link>
-                <Link to="/libreriaapi" className="hover:underline">LibreriaAPI</Link>
+            <Link to="/" className="hover:underline">Inicio</Link>
+            <Link to="/shop" className="hover:underline">Tienda</Link>
+            <Link to="/Contact" className="hover:underline">Contacto</Link>
+            <Link to="/aboutus" className="hover:underline">Nosotros</Link>
+            <Link to="/libreriaapi" className="hover:underline">LibreriaAPI</Link>
+
+            {/* Condición para mostrar enlace solo si el usuario es admin */}
+            {user?.role === 'admin' && (
+                <Link to="/admin" className="hover:underline">Admin</Link>
+            )}
             </div>
+
+
 
             <Modal isModelOpen={isModelOpen} setIsModelOpen={setIsModelOpen}>
                 {isLogin ? <Login openSignUp={openSignUp} setIsModelOpen={setIsModelOpen} /> : <Register openLogin={openLogin} />}
