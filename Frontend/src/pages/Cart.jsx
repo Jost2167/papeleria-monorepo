@@ -58,8 +58,9 @@ const Cart = () => {
                                     <p>BORRAR</p>
                                 </div>
                             </div>
-                            {cart.products.map((product) => (
-                                <div key={product.id} className="flex items-center justify-between p-3 border-b">
+
+                            {cart.products.map((product, index) => (
+                                <div key={product.id || `${product.name}-${index}`} className="flex items-center justify-between p-3 border-b">
                                     <div className="flex items-center space-x-4">
                                         <img src={product.image} alt={product.name} className="w-16 h-16 object-contain rounded" />
                                         <div className="flex-1 ml-4">

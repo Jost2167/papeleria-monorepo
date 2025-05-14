@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { FaSearch, FaShoppingCart, FaUser, FaBook, FaSignOutAlt } from "react-icons/fa";  // Agregado FaSignOutAlt para cerrar sesión
+import { FaSearch, FaShoppingCart, FaUser, FaBook, FaSignOutAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
 import Modal from "./Modal";
 import { setSearchTerm } from "../redux/productSlice";
-import { logOutUser } from "../redux/userSlice"; // Asumiendo que tienes una acción de logout en tu slice
+import { logOutUser } from "../redux/userSlice";
+import { clearCart } from "../redux/cartSlice"; // ✅ Importa la acción para vaciar el carrito
 
 const Navbar = () => {
     const [isModelOpen, setIsModelOpen] = useState(false);
@@ -32,19 +33,22 @@ const Navbar = () => {
     };
 
     const products = useSelector(state => state.cart.products);
-    const user = useSelector(state => state.user);  // Obtener datos del usuario
+    const user = useSelector(state => state.user);
     const isLoggedIn = user?.isLoggedIn;
 
+    // ✅ Función de cerrar sesión con vaciado del carrito
     const handleLogout = () => {
-        dispatch(logOutUser());  // Acción que limpia el estado de usuario
-        setIsModelOpen(false);  // Cerrar modal si estaba abierto
+        dispatch(clearCart());         // 🔥 Vaciar el carrito del Redux state
+        dispatch(logOutUser());        // Cerrar sesión del usuario
+        setIsModelOpen(false);         // Cerrar modal si estaba abierto
+        navigate('/');                 // Redirigir al inicio
     };
 
     return (
         <nav className="bg-white shadow-md">
             <div className="container mx-auto px-4 md:px-16 lg:px-24 py-4 flex justify-between items-center">
                 <div className="text-lg font-bold flex items-center space-x-2">
-                    <FaBook className="text-2xl text-blue-700" /> {/* Ícono a la izquierda de "Papelería" */}
+                    <FaBook className="text-2xl text-blue-700" />
                     <Link to="/">Papelería</Link>
                 </div>
                 <div className="relative flex-1 mx-4">
@@ -68,7 +72,6 @@ const Navbar = () => {
                         )}
                     </Link>
 
-                    {/* Mostrar nombre de usuario y botón de cerrar sesión si está logueado */}
                     {isLoggedIn ? (
                         <div className="flex items-center space-x-4">
                             <span className="text-sm font-semibold">Hola, {user.name}</span>
@@ -82,7 +85,6 @@ const Navbar = () => {
                         </button>
                     )}
 
-                    {/* Icono de usuario para dispositivos móviles */}
                     <button className="block md:hidden">
                         <FaUser />
                     </button>
