@@ -1,22 +1,23 @@
 import { configureStore } from "@reduxjs/toolkit";
 import cartSlice from "./cartSlice";
 import productSlice from "./productSlice";
+import userSlice from "./userSlice";  // ✅
+
 import { loadCartFromStorage, saveCartToStorage } from "./cartStorage";
 
-// Cargar carrito desde localStorage
 const preloadedCartState = loadCartFromStorage();
 
 const store = configureStore({
   reducer: {
     cart: cartSlice,
     product: productSlice,
+    user: userSlice,  // ✅
   },
   preloadedState: {
-    cart: preloadedCartState, // Solo pre-cargar el carrito
+    cart: preloadedCartState,
   },
 });
 
-// Guardar carrito cada vez que se actualice
 store.subscribe(() => {
   saveCartToStorage(store.getState().cart);
 });

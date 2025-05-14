@@ -1,11 +1,13 @@
-/* eslint-disable react/prop-types */
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../redux/userSlice';
 
-const Login = ({ openSignUp }) => {
+const Login = ({ openSignUp, setIsModelOpen }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null); // ✅ mensaje de éxito
+    const [success, setSuccess] = useState(null);
+    const dispatch = useDispatch();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -16,19 +18,32 @@ const Login = ({ openSignUp }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                credentials: 'include', // para enviar cookies si usas sesiones
+                credentials: 'include',
                 body: JSON.stringify({ email, password }),
             });
 
             const result = await response.json();
 
             if (response.ok) {
-                setSuccess('¡Inicio de sesión exitoso!'); // ✅ mensaje visible
+                setSuccess('¡Inicio de sesión exitoso!');
                 setError(null);
 
+                // ✅ Establecer usuario en Redux                
+                dispatch(setUser({
+                    name: result.username, // 👈 usa 'username' en lugar de 'name'
+                    email: result.email,
+                }));
+
+                // ✅ Guardar el usuario en localStorage
+                localStorage.setItem('user', JSON.stringify({
+                    name: result.username,  // Cambié `name` por `username`
+                    email: result.email,
+                }));
+
+                // ✅ Cerrar el modal
                 setTimeout(() => {
-                    window.location.reload(); // o cerrar modal aquí si prefieres
-                }, 1500);
+                    setIsModelOpen(false);
+                }, 1000);
             } else {
                 setError(result.message || 'Credenciales inválidas');
                 setSuccess(null);
@@ -44,9 +59,7 @@ const Login = ({ openSignUp }) => {
         <div>
             <h2 className="text-2xl font-bold mb-4">Iniciar sesión</h2>
 
-            {/* ✅ Mostrar mensaje de éxito */}
             {success && <p className="text-green-600 text-sm mb-4">{success}</p>}
-            {/* ❌ Mostrar errores */}
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
             <form onSubmit={handleLogin}>
