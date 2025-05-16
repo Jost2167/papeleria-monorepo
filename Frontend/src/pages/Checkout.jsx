@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import StripeCheckout from "../components/StripeCheckout";
 
 // ✅ Modal de error (componente dentro del mismo archivo)
 const ErrorModal = ({ show, message, onClose }) => {
@@ -26,6 +27,7 @@ const ErrorModal = ({ show, message, onClose }) => {
 };
 
 const Checkout = ({ setOrder }) => {
+    const stripeRef = useRef();
     const [shippingToggle, setShippingToggle] = useState(false);
     const [paymentToggle, setPaymentToggle] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState("cod");
@@ -59,13 +61,6 @@ const Checkout = ({ setOrder }) => {
         zip: value => /^[0-9]{4,10}$/.test(value) || "Código postal inválido"
     };
 
-    const cardValidators = {
-        number: value => /^\d{16}$/.test(value) || "Número de tarjeta inválido (16 dígitos)",
-        name: value => /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,}$/.test(value) || "Nombre inválido",
-        expiry: value => /^(0[1-9]|1[0-2])\/\d{2}$/.test(value) || "Fecha inválida (MM/YY)",
-        cvv: value => /^\d{3,4}$/.test(value) || "CVV inválido"
-    };
-
     const [shippingInfo, setShippingInfo] = useState({
         name: '',
         email: '',
@@ -73,20 +68,6 @@ const Checkout = ({ setOrder }) => {
         address: '',
         city: '',
         zip: ''
-    });
-
-    const [cardInfo, setCardInfo] = useState({
-        number: '',
-        name: '',
-        expiry: '',
-        cvv: ''
-    });
-
-    const [cardErrors, setCardErrors] = useState({
-        number: '',
-        name: '',
-        expiry: '',
-        cvv: ''
     });
 
     const [bankFile, setBankFile] = useState(null);
@@ -113,7 +94,7 @@ const Checkout = ({ setOrder }) => {
         fetchPaymentSettings();
     }, []);
 
-    const handleOrder = () => {
+    const handleOrder = async() => {
         const { name, email, phone, address, city, zip } = shippingInfo;
     
         const newErrors = {
@@ -133,22 +114,18 @@ const Checkout = ({ setOrder }) => {
         }
     
         if (paymentMethod === "dc") {
-            const { number, name, expiry, cvv } = cardInfo;
-    
-            const newCardErrors = {
-                number: cardValidators.number(number) === true ? '' : cardValidators.number(number),
-                name: cardValidators.name(name) === true ? '' : cardValidators.name(name),
-                expiry: cardValidators.expiry(expiry) === true ? '' : cardValidators.expiry(expiry),
-                cvv: cardValidators.cvv(cvv) === true ? '' : cardValidators.cvv(cvv)
-            };
-            setCardErrors(newCardErrors);
-    
-            const hasCardErrors = Object.values(newCardErrors).some(error => error !== '');
-            if (hasCardErrors) {
-                showErrorModal("Por favor corrige los errores en los campos de la tarjeta.");
-                return;
+            const result = await stripeRef.current?.pay();
+          
+            if (result?.error) {
+              showErrorModal(result.error.message);
+              return;
             }
-        }
+          
+            if (result?.paymentIntent?.status !== "succeeded") {
+              showErrorModal("El pago no fue exitoso. Intenta de nuevo.");
+              return;
+            }
+        }  
     
         if (paymentMethod === "bank" && !bankFile) {
             showErrorModal("Por favor sube el comprobante de pago para transferencia bancaria.");
@@ -161,7 +138,6 @@ const Checkout = ({ setOrder }) => {
             shippingInformation: shippingInfo,
             totalPrice: cart.totalPrice,
             paymentMethod,
-            ...(paymentMethod === "dc" && { cardInfo }),
             ...(paymentMethod === "bank" && { bankProof: bankFile.name })
         };
     
@@ -318,75 +294,13 @@ const Checkout = ({ setOrder }) => {
                             )}
 
                             {/* Tarjeta débito */}
-                            
                             {paymentMethod === "dc" && (
                             <div className="bg-gray-100 p-4 rounded-lg mb-4">
-                                <h3 className="text-xl font-semibold mb-4">Información de tarjeta de débito</h3>
-                                
-                                <input
-                                type="text"
-                                placeholder="Número de tarjeta"
-                                className="border p-2 w-full rounded mb-1"
-                                value={cardInfo.number}
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    setCardInfo({ ...cardInfo, number: value });
-                                    setCardErrors(prev => ({ ...prev, number: cardValidators.number(value) === true ? '' : cardValidators.number(value) }));
-                                }}
-                                maxLength={16}
-                                pattern="\d{16}"
-                                />
-                                {cardErrors.number && <p className="text-red-600 text-sm mb-3">{cardErrors.number}</p>}
-
-                                <input
-                                type="text"
-                                placeholder="Nombre del titular"
-                                className="border p-2 w-full rounded mb-1"
-                                value={cardInfo.name}
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    setCardInfo({ ...cardInfo, name: value });
-                                    setCardErrors(prev => ({ ...prev, name: cardValidators.name(value) === true ? '' : cardValidators.name(value) }));
-                                }}
-                                />
-                                {cardErrors.name && <p className="text-red-600 text-sm mb-3">{cardErrors.name}</p>}
-
-                                <div className="flex justify-between">
-                                <div className="w-1/2 mr-2">
-                                    <input
-                                    type="text"
-                                    placeholder="MM/YY"
-                                    className="border p-2 w-full rounded mb-1"
-                                    value={cardInfo.expiry}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        setCardInfo({ ...cardInfo, expiry: value });
-                                        setCardErrors(prev => ({ ...prev, expiry: cardValidators.expiry(value) === true ? '' : cardValidators.expiry(value) }));
-                                    }}
-                                    maxLength={5}
-                                    pattern="(0[1-9]|1[0-2])/\d{2}"
-                                    />
-                                    {cardErrors.expiry && <p className="text-red-600 text-sm mb-3">{cardErrors.expiry}</p>}
-                                </div>
-                                <div className="w-1/2 ml-2">
-                                    <input
-                                    type="text"
-                                    placeholder="CVV"
-                                    className="border p-2 w-full rounded mb-1"
-                                    value={cardInfo.cvv}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        setCardInfo({ ...cardInfo, cvv: value });
-                                        setCardErrors(prev => ({ ...prev, cvv: cardValidators.cvv(value) === true ? '' : cardValidators.cvv(value) }));
-                                    }}
-                                    maxLength={4}
-                                    pattern="\d{3,4}"
-                                    />
-                                    {cardErrors.cvv && <p className="text-red-600 text-sm mb-3">{cardErrors.cvv}</p>}
-                                </div>
-                                </div>
+                                <h3 className="text-xl font-semibold mb-4">Pago con tarjeta</h3>
+                                <StripeCheckout amount={cart.totalPrice} stripeRef={stripeRef} />
                             </div>
                             )}
+
 
                             {/* Transferencia bancaria */}
                             {paymentMethod === "bank" && paymentSettings.bankTransferDetails && (

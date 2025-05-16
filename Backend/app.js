@@ -8,6 +8,7 @@ import cors from 'cors';
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import paymentSettingsRoutes from "./routes/paymentSettings.js";
+import paymentRoutes from "./routes/payment.js";
 
 const app = express();
 
@@ -26,7 +27,7 @@ app.use('/productos', routesProductos);
 app.use('/api/cart', cartRoutes);
 app.use("/api", authRoutes);
 app.use("/api/payment", paymentSettingsRoutes);
-
+app.use("/api/payment", paymentRoutes);
 
 try {
     const PORT = process.env.PORT || 3000;
