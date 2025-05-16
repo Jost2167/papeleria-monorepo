@@ -15,6 +15,7 @@ import LibreriaAPI from "./pages/LibreriaAPI"
 import Admin from "./pages/Admin";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import PaymentMethods from "./pages/PaymentMethods"
+import ProtectedRoute from "./components/ProtectedRoute";
 
 
 function App() {
@@ -29,7 +30,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<Checkout setOrder={setOrder} />} />
+        
         <Route path="/order-confirmation" element={<Order order={order} />} />
         <Route path="/filter-data" element={<FilterData />} />
         <Route path="/product/:id" element={<ProductDetail />} />
@@ -48,6 +49,15 @@ function App() {
             <ProtectedAdminRoute>
               <PaymentMethods />
             </ProtectedAdminRoute>
+          }
+        />
+
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <Checkout setOrder={setOrder} />
+            </ProtectedRoute>
           }
         />
 

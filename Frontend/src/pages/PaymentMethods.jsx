@@ -12,6 +12,8 @@ const PaymentMethods = () => {
   const [swiftCode, setSwiftCode] = useState("");
   const [accountHolderName, setAccountHolderName] = useState("");
   const [accountHolderNIT, setAccountHolderNIT] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
 
   const [loading, setLoading] = useState(true);
 
@@ -61,12 +63,14 @@ const PaymentMethods = () => {
     };
 
     try {
-      await axios.put("http://localhost:5100/api/payment", updatedSettings);
-      alert("Configuración guardada correctamente.");
-    } catch (error) {
-      console.error("Error al guardar los datos", error);
-      alert("Hubo un error al guardar los datos.");
-    }
+        await axios.put("http://localhost:5100/api/payment", updatedSettings);
+        setShowSuccessModal(true); // Muestra el modal
+      } catch (error) {
+        console.error("Error al guardar los datos", error);
+        alert("Hubo un error al guardar los datos.");
+      }
+      
+
   };
 
   if (loading) return <div className="text-center text-xl font-semibold">Cargando...</div>;
@@ -129,100 +133,68 @@ const PaymentMethods = () => {
         </span>
       </div>
 
-      {/* Solo mostrar los campos de transferencia si está habilitada */}
       {bankTransferEnabled && (
-        <>
-          <h3 className="text-xl font-semibold mb-6 text-center">Datos de Transferencia</h3>
-          <div className="space-y-4 mb-6">
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <strong>Banco:</strong>
-                <p>{bankName}</p>
-              </div>
-              <div>
-                <strong>Tipo de cuenta:</strong>
-                <p>{accountType}</p>
-              </div>
-              <div>
-                <strong>Número de cuenta:</strong>
-                <p>{accountNumber}</p>
-              </div>
-              <div>
-                <strong>Código SWIFT:</strong>
-                <p>{swiftCode}</p>
-              </div>
-              <div>
-                <strong>Nombre del titular:</strong>
-                <p>{accountHolderName}</p>
-              </div>
-              <div>
-                <strong>NIT del titular:</strong>
-                <p>{accountHolderNIT}</p>
-              </div>
+        <div className="bg-blue-50 border border-blue-500 p-6 rounded-xl shadow-md transition-all duration-500 mb-6">
+        <h3 className="text-xl font-semibold mb-4 text-blue-800">Editar Información</h3>
+        <form className="space-y-6">
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="block font-medium">Banco</label>
+              <input
+                type="text"
+                value={bankName}
+                onChange={(e) => setBankName(e.target.value)}
+                className="w-full border px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block font-medium">Tipo de Cuenta</label>
+              <input
+                type="text"
+                value={accountType}
+                onChange={(e) => setAccountType(e.target.value)}
+                className="w-full border px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block font-medium">Número de Cuenta</label>
+              <input
+                type="text"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
+                className="w-full border px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block font-medium">Código SWIFT</label>
+              <input
+                type="text"
+                value={swiftCode}
+                onChange={(e) => setSwiftCode(e.target.value)}
+                className="w-full border px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block font-medium">Nombre del Titular</label>
+              <input
+                type="text"
+                value={accountHolderName}
+                onChange={(e) => setAccountHolderName(e.target.value)}
+                className="w-full border px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block font-medium">NIT del Titular</label>
+              <input
+                type="text"
+                value={accountHolderNIT}
+                onChange={(e) => setAccountHolderNIT(e.target.value)}
+                className="w-full border px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
           </div>
-
-          {/* Formulario para actualizar los datos de transferencia */}
-          <h3 className="text-xl font-semibold mb-4">Editar Información</h3>
-          <form className="space-y-6">
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <label className="block font-medium">Banco</label>
-                <input
-                  type="text"
-                  value={bankName}
-                  onChange={(e) => setBankName(e.target.value)}
-                  className="w-full border px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block font-medium">Tipo de Cuenta</label>
-                <input
-                  type="text"
-                  value={accountType}
-                  onChange={(e) => setAccountType(e.target.value)}
-                  className="w-full border px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block font-medium">Número de Cuenta</label>
-                <input
-                  type="text"
-                  value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value)}
-                  className="w-full border px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block font-medium">Código SWIFT</label>
-                <input
-                  type="text"
-                  value={swiftCode}
-                  onChange={(e) => setSwiftCode(e.target.value)}
-                  className="w-full border px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block font-medium">Nombre del Titular</label>
-                <input
-                  type="text"
-                  value={accountHolderName}
-                  onChange={(e) => setAccountHolderName(e.target.value)}
-                  className="w-full border px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block font-medium">NIT del Titular</label>
-                <input
-                  type="text"
-                  value={accountHolderNIT}
-                  onChange={(e) => setAccountHolderNIT(e.target.value)}
-                  className="w-full border px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-          </form>
-        </>
+        </form>
+      </div>      
       )}
 
       <div className="mt-6">
@@ -234,6 +206,25 @@ const PaymentMethods = () => {
           Guardar Cambios
         </button>
       </div>
+
+      {/* MODAL DE ÉXITO */}
+        {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 className="text-xl font-semibold mb-4 text-green-600">¡Guardado con éxito!</h2>
+            <p className="text-gray-700 mb-6">La configuración de métodos de pago ha sido actualizada correctamente.</p>
+            <div className="text-right">
+                <button
+                onClick={() => setShowSuccessModal(false)}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                >
+                Cerrar
+                </button>
+            </div>
+            </div>
+        </div>
+        )}
+
     </div>
   );
 };
