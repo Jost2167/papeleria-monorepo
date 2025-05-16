@@ -127,18 +127,33 @@ const Checkout = ({ setOrder }) => {
             }
         }  
     
-        if (paymentMethod === "bank" && !bankFile) {
-            showErrorModal("Por favor sube el comprobante de pago para transferencia bancaria.");
-            return;
+        let bankProofUrl = "";
+
+        if (paymentMethod === "bank") {
+            const formData = new FormData();
+            formData.append("file", bankFile);
+            formData.append("upload_preset", "papeleria_comprobante");
+            //formData.append("resource_type", "raw"); // 👈 Esto obliga a tratarlo como archivo crudo (PDF, DOC, etc.)
+
+            try {
+                
+                const response = await axios.post("https://api.cloudinary.com/v1_1/dobicjr4v/auto/upload", formData);
+                bankProofUrl = response.data.secure_url;
+                console.log("Cloudinary response:", response.data);
+            } catch (error) {
+                console.error("Error al subir el comprobante:", error);
+                showErrorModal("Error al subir el comprobante. Intenta nuevamente.");
+                return;
+            }
         }
-    
+
         const newOrder = {
             products: cart.products,
             orderNumber: "12344",
             shippingInformation: shippingInfo,
             totalPrice: cart.totalPrice,
             paymentMethod,
-            ...(paymentMethod === "bank" && { bankProof: bankFile.name })
+            ...(paymentMethod === "bank" && { bankProof: bankProofUrl })
         };
     
         setOrder(newOrder);
@@ -147,13 +162,13 @@ const Checkout = ({ setOrder }) => {
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        if (file && file.type !== "application/pdf") {
-            showErrorModal("Solo se permiten archivos PDF.");
+        if (file && !file.type.startsWith("image/")) {
+            showErrorModal("Solo se permiten archivos de imagen (JPG, PNG, etc.)");
             return;
         }
         setBankFile(file);
     };
-    
+        
     if (!paymentSettings) {
         return <div className="text-center py-10 text-lg">Cargando métodos de pago...</div>;
     }
@@ -318,7 +333,7 @@ const Checkout = ({ setOrder }) => {
                                         <label className="block text-gray-700 font-semibold mb-2">Subir comprobante de pago</label>
                                         <input
                                         type="file"
-                                        accept="application/pdf"
+                                        accept="image/*"
                                         className="border p-2 w-full rounded"
                                         onChange={handleFileChange}
                                         />
