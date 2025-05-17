@@ -5,6 +5,9 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import StripeCheckout from "../components/StripeCheckout";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../redux/cartSlice";
+
 
 // ✅ Modal de error (componente dentro del mismo archivo)
 const ErrorModal = ({ show, message, onClose }) => {
@@ -27,6 +30,7 @@ const ErrorModal = ({ show, message, onClose }) => {
 };
 
 const Checkout = ({ setOrder }) => {
+    const dispatch = useDispatch();
     const stripeRef = useRef();
     const [shippingToggle, setShippingToggle] = useState(false);
     const [paymentToggle, setPaymentToggle] = useState(false);
@@ -164,6 +168,7 @@ const Checkout = ({ setOrder }) => {
         
             console.log("Orden creada:", res.data);
             setOrder(res.data.order);
+            dispatch(clearCart()); // 🔥 Vaciar el carrito
             navigate("/order-confirmation");
           } catch (error) {
             console.error("Error al crear la orden en backend:", error);

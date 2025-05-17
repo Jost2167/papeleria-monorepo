@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FaCreditCard, FaCogs } from 'react-icons/fa';
+import { FaCreditCard, FaCogs, FaShoppingCart } from 'react-icons/fa';
 
 const Admin = () => {
   return (
@@ -8,8 +8,10 @@ const Admin = () => {
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Panel de Administrador</h1>
         <p className="text-gray-600 mb-8 text-center">Bienvenido al panel de administración, donde puedes gestionar todos los aspectos de la tienda.</p>
         
-        <div className="mb-6">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-3">Gestión de Métodos de Pago</h3>
+        <h3 className="text-2xl font-semibold text-gray-800 mb-4">Configuraciones</h3>
+
+        <div className="space-y-4">
+          {/* Métodos de Pago */}
           <div className="bg-gray-100 p-4 rounded-md flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <FaCreditCard className="text-blue-600 text-xl" />
@@ -22,19 +24,30 @@ const Admin = () => {
               Gestionar
             </Link>
           </div>
-        </div>
 
-        {/* Otra sección para agregar más funcionalidades */}
-        <div className="mb-6">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-3">Configuraciones Generales</h3>
+          {/* Productos */}
           <div className="bg-gray-100 p-4 rounded-md flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <FaCogs className="text-green-600 text-xl" />
-              <span className="text-lg font-medium text-gray-800">Configuraciones</span>
+              <span className="text-lg font-medium text-gray-800">Productos</span>
             </div>
             <Link 
               to="/admin/settings"
               className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Gestionar
+            </Link>
+          </div>
+
+          {/* Carrito de Compra (Rojo) */}
+          <div className="bg-gray-100 p-4 rounded-md flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <FaShoppingCart className="text-red-600 text-xl" />
+              <span className="text-lg font-medium text-gray-800">Carrito de Compra</span>
+            </div>
+            <Link 
+              to="/admin/cart"
+              className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
             >
               Gestionar
             </Link>

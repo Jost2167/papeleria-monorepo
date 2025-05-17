@@ -1,4 +1,4 @@
-import Producto from '../schemas/productoSchema.js';
+import Producto from '../schemas/product.schema.js';
 
 class ProductoModel {
   

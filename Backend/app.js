@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
-import routesProductos from './routes/productos.js';
+import routesProductos from './routes/product.routes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import bodyParser from 'body-parser';
 import dbClient from './config/dbClient.js';
