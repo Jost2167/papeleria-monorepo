@@ -133,7 +133,6 @@ const Checkout = ({ setOrder }) => {
             const formData = new FormData();
             formData.append("file", bankFile);
             formData.append("upload_preset", "papeleria_comprobante");
-            //formData.append("resource_type", "raw"); // 👈 Esto obliga a tratarlo como archivo crudo (PDF, DOC, etc.)
 
             try {
                 
@@ -149,15 +148,27 @@ const Checkout = ({ setOrder }) => {
 
         const newOrder = {
             products: cart.products,
-            orderNumber: "12344",
             shippingInformation: shippingInfo,
             totalPrice: cart.totalPrice,
             paymentMethod,
             ...(paymentMethod === "bank" && { bankProof: bankProofUrl })
         };
-    
-        setOrder(newOrder);
-        navigate('/order-confirmation');
+
+        try {
+            const res = await axios.post("http://localhost:5100/api/orders", newOrder, {
+              withCredentials: true, // si usas cookies/autenticación
+              headers: {
+                "Content-Type": "application/json"
+              }
+            });
+        
+            console.log("Orden creada:", res.data);
+            setOrder(res.data.order);
+            navigate("/order-confirmation");
+          } catch (error) {
+            console.error("Error al crear la orden en backend:", error);
+            showErrorModal("Error al crear la orden. Intenta de nuevo.");
+          }
     };
 
     const handleFileChange = (e) => {
@@ -315,7 +326,6 @@ const Checkout = ({ setOrder }) => {
                                 <StripeCheckout amount={cart.totalPrice} stripeRef={stripeRef} />
                             </div>
                             )}
-
 
                             {/* Transferencia bancaria */}
                             {paymentMethod === "bank" && paymentSettings.bankTransferDetails && (

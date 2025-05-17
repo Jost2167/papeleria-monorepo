@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import paymentSettingsRoutes from "./routes/paymentSettings.js";
 import paymentRoutes from "./routes/payment.js";
+import orderRoutes from "./routes/order.routes.js";
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use('/api/cart', cartRoutes);
 app.use("/api", authRoutes);
 app.use("/api/payment", paymentSettingsRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/orders", orderRoutes);
 
 try {
     const PORT = process.env.PORT || 3000;
