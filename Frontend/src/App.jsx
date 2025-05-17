@@ -16,7 +16,7 @@ import Admin from "./pages/Admin";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import PaymentMethods from "./pages/PaymentMethods"
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import ProductSettings from "./pages/ProductSettings"
 
 function App() {
   const [order, setOrder] = useState(null)
@@ -51,6 +51,12 @@ function App() {
             </ProtectedAdminRoute>
           }
         />
+
+        <Route path="/admin/product-settings" element={
+          <ProtectedAdminRoute>
+            <ProductSettings />
+          </ProtectedAdminRoute>
+        }/>
 
         <Route
           path="/checkout"

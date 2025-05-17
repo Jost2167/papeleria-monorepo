@@ -32,7 +32,7 @@ const Admin = () => {
               <span className="text-lg font-medium text-gray-800">Productos</span>
             </div>
             <Link 
-              to="/admin/settings"
+              to="/admin/product-settings"
               className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
             >
               Gestionar
