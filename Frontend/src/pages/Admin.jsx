@@ -46,7 +46,7 @@ const Admin = () => {
               <span className="text-lg font-medium text-gray-800">Carrito de Compra</span>
             </div>
             <Link 
-              to="/admin/cart"
+              to="/admin/orders"
               className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
             >
               Gestionar
