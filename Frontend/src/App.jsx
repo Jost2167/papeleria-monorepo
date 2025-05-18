@@ -36,6 +36,7 @@ function App() {
         <Route path="/filter-data" element={<FilterData />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/libreriaapi" element={<LibreriaAPI />} />
+        
         <Route
           path="/admin" element={
           <ProtectedAdminRoute>
@@ -58,10 +59,12 @@ function App() {
             <ProductSettings />
           </ProtectedAdminRoute>
         }/>
-
-        <Route path="/admin/orders" element={<OrderList />} />
   
-
+        <Route path="admin/orders" element={
+          <ProtectedAdminRoute>
+            <OrderList />
+          </ProtectedAdminRoute>
+        }/>
 
         <Route
           path="/checkout"
