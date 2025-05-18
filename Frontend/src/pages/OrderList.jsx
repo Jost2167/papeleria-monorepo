@@ -11,6 +11,8 @@ const statusOptions = ["pendiente", "enviado", "entregado"];
 
 const OrderList = () => {
   const [orders, setOrders] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -34,7 +36,7 @@ const OrderList = () => {
         { status: newStatus },
         { withCredentials: true }
       );
-      fetchOrders(); // Refrescar la lista
+      fetchOrders();
     } catch (err) {
       console.error("Error al actualizar el estado:", err);
     }
@@ -58,7 +60,7 @@ const OrderList = () => {
                 <th className="p-3">Total</th>
                 <th className="p-3">Estado</th>
                 <th className="p-3">Fecha</th>
-                <th className="p-3">Acción</th>
+                <th className="p-3 text-center">Acción</th>
               </tr>
             </thead>
             <tbody>
@@ -77,7 +79,9 @@ const OrderList = () => {
                   <td className="p-3 text-sm text-gray-700">
                     <p className="font-medium">{order.shippingInformation.name}</p>
                     <p>{order.shippingInformation.email}</p>
-                    <p className="text-gray-500">{order.shippingInformation.address}, {order.shippingInformation.city}</p>
+                    <p className="text-gray-500">
+                      {order.shippingInformation.address}, {order.shippingInformation.city}
+                    </p>
                   </td>
                   <td className="p-3 text-sm">
                     {order.paymentMethod === "cod" && "Contra entrega"}
@@ -86,31 +90,31 @@ const OrderList = () => {
                       <div>
                         Transferencia
                         {order.bankProof && (
-                          <div>
-                            <a
-                              href={order.bankProof}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 underline text-xs block"
-                            >
-                              Ver comprobante
-                            </a>
-                          </div>
+                          <a
+                            href={order.bankProof}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline text-xs block"
+                          >
+                            Ver comprobante
+                          </a>
                         )}
                       </div>
                     )}
                   </td>
                   <td className="p-3 font-semibold text-green-600">${order.totalPrice}</td>
                   <td className="p-3">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[order.status]}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[order.status]}`}
+                    >
                       {order.status}
                     </span>
                   </td>
                   <td className="p-3 text-xs text-gray-500">
                     {new Date(order.createdAt).toLocaleDateString()}<br />
-                    {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(order.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </td>
-                  <td className="p-3">
+                  <td className="p-3 flex gap-2 justify-center items-center">
                     <select
                       value={order.status}
                       onChange={(e) => updateStatus(order._id, e.target.value)}
@@ -122,11 +126,58 @@ const OrderList = () => {
                         </option>
                       ))}
                     </select>
+                    <button
+                      onClick={() => {
+                        setSelectedOrderId(order._id);
+                        setShowModal(true);
+                      }}
+                      className="text-red-600 hover:text-red-800 text-sm"
+                      title="Eliminar orden"
+                    >
+                      🗑️
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Modal de confirmación */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white rounded-lg p-6 shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-semibold mb-4">¿Eliminar esta orden?</h3>
+            <p className="text-gray-600 mb-6">
+              Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminarla?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await axios.delete(`http://localhost:5100/api/orders/${selectedOrderId}`, {
+                      withCredentials: true,
+                    });
+                    setShowModal(false);
+                    setSelectedOrderId(null);
+                    fetchOrders();
+                  } catch (err) {
+                    console.error("Error al eliminar la orden:", err);
+                  }
+                }}
+                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

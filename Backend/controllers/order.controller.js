@@ -71,3 +71,20 @@ export const updateOrderStatus = async (req, res) => {
     return res.status(500).json({ message: "Error del servidor" });
   }
 };
+
+export const deleteOrder = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedOrder = await Order.findByIdAndDelete(id);
+
+    if (!deletedOrder) {
+      return res.status(404).json({ message: "Orden no encontrada" });
+    }
+
+    return res.status(200).json({ message: "Orden eliminada correctamente" });
+  } catch (error) {
+    console.error("Error al eliminar la orden:", error);
+    return res.status(500).json({ message: "Error del servidor" });
+  }
+};
